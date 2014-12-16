@@ -29,7 +29,10 @@ function main(in_file, filter_str)
    -- Warm up.
    filter(ptr, ptr_end, pred)
    local start = utils.now()
-   local seen, matched = filter(ptr, ptr_end, pred)
+   local seen,matched
+   for i = 1,999 do
+      seen, matched = filter(ptr, ptr_end, pred)
+   end   
    local elapsed = utils.now() - start
    print(string.format("Matched %d/%d packets from %s (%f MPPS).",
                        matched, seen, in_file, seen/elapsed*1e-6))
