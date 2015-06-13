@@ -15,7 +15,7 @@ local relops = set('<', '<=', '=', '!=', '>=', '>')
 --- Control := ['return', Bool] | ['if', Bool, Label, Label] | ['goto',Label]
 --- Bool := true | false | Comparison
 
-local function print_ssa(ssa)
+function print_ssa(ssa)
    local function block_repr(block)
       local bindings = { 'bindings' }
       for _,binding in ipairs(block.bindings) do

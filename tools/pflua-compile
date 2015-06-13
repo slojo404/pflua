@@ -6,18 +6,25 @@ package.path = package.path .. ";../src/?.lua"
 local pf = require("pf")
 local bpf = require("pf.bpf")
 local utils = require("pf.utils")
+local anf = require("pf.anf")
+local ssa = require("pf.ssa")
 
 function usage()
    local content = [=[
-Usage: pflua-compile [-O0] [--bpf-asm | --bpf-lua | --lua] <pflang-expression>
+Usage: pflua-compile [-O0] [pipeline] <pflang-expression>
 
 Options:
+   Pipeline options: --bpf-asm, --bpf-lua, --lua, --parse, --anf, --ssa.
    --bpf-asm   Print libpcap-generated BPF asm code for <pflang-expression>
    --bpf-lua   Print Lua code compiled from BPF for <pflang-expression>
    --lua       Print Lua code compiled directly for <pflang-expression> (DEFAULT)
 
+   --ast       Emit the abstract syntax tree
+   --anf       Emit the A-Normal Form IR
+   --ssa       Emit the Single Static Assignment IR
+
    -O0         Disable optimizations. (Optimizations are on by default) ]=]
-   print(content);
+   print(content)
    os.exit()
 end
 
@@ -34,7 +41,8 @@ if flags["--help"] or flags["-h"] then
 end
 
 -- No code-generation flag defined
-if (not(flags["--bpf-asm"] or flags["--bpf-lua"] or flags["--lua"])) then
+if (not(flags["--bpf-asm"] or flags["--bpf-lua"] or flags["--lua"]
+        or flags["--ast"] or flags["--anf"] or flags["--ssa"])) then
    -- Default action
    flags["--lua"] = true
 end
@@ -55,3 +63,16 @@ end
 if flags["--lua"] then
    print(pf.compile_filter(filter, {source=true, optimize=optimize}))
 end
+
+
+local ast = pf.expand.expand(pf.parse.parse(filter), "EN10MB")
+if optimize then
+   ast = pf.optimize.optimize(ast)
+end
+if flags["--ast"] then utils.pp(ast) end
+
+local anf_expr = anf.convert_anf(ast)
+if flags["--anf"] then utils.pp(anf_expr) end
+
+local ssa_expr = ssa.convert_ssa(anf_expr)
+if flags["--ssa"] then ssa.print_ssa(ssa_expr) end
