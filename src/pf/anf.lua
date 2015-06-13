@@ -216,8 +216,10 @@ local function inline_single_use_variables(expr)
    return subst(expr)
 end
 
-function convert_anf(expr)
-   return inline_single_use_variables(cse(lower(expr)))
+function convert_anf(expr, optimize)
+   local anf = lower(expr)
+   if optimize then anf = inline_single_use_variables(cse(anf)) end
+   return anf
 end
 
 function selftest()
@@ -225,7 +227,7 @@ function selftest()
    local expand = require('pf.expand').expand
    local optimize = require('pf.optimize').optimize
    local function test(expr)
-      return convert_anf(optimize(expand(parse(expr), "EN10MB")))
+      return convert_anf(optimize(expand(parse(expr), "EN10MB")), true)
    end
    print("selftest: pf.anf")
    test("tcp port 80")

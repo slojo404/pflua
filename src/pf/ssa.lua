@@ -298,8 +298,9 @@ local function compute_doms(ssa)
    end
 end
 
-function convert_ssa(anf)
-   local ssa = optimize_ssa(lower(anf))
+function convert_ssa(anf, optimize)
+   local ssa = lower(anf)
+   if optimize then ssa = optimize_ssa(ssa) end
    order_blocks(ssa)
    add_predecessors(ssa)
    compute_idoms(ssa)
@@ -316,7 +317,8 @@ function selftest()
    local convert_anf = require('pf.anf').convert_anf
 
    local function test(expr)
-      return convert_ssa(convert_anf(optimize(expand(parse(expr), "EN10MB"))))
+      local ast = optimize(expand(parse(expr), "EN10MB"))
+      return convert_ssa(convert_anf(ast, true), true)
    end
 
    test("tcp port 80 or udp port 34")

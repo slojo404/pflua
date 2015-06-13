@@ -71,8 +71,8 @@ if optimize then
 end
 if flags["--ast"] then utils.pp(ast) end
 
-local anf_expr = anf.convert_anf(ast)
+local anf_expr = anf.convert_anf(ast, optimize)
 if flags["--anf"] then utils.pp(anf_expr) end
 
-local ssa_expr = ssa.convert_ssa(anf_expr)
+local ssa_expr = ssa.convert_ssa(anf_expr, optimize)
 if flags["--ssa"] then ssa.print_ssa(ssa_expr) end

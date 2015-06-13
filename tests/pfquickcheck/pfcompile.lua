@@ -6,7 +6,7 @@ local backend = require("pf.backend")
 local function ast_to_ssa(ast)
    local convert_anf = require('pf.anf').convert_anf
    local convert_ssa = require('pf.ssa').convert_ssa
-   return convert_ssa(convert_anf(ast))
+   return convert_ssa(convert_anf(ast, true), true)
 end
 
 -- Compile_lua_ast and compile_ast are a stable API for tests

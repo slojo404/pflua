@@ -365,7 +365,7 @@ function selftest()
 
    local function test(expr)
       local ast = optimize(expand(parse(expr), "EN10MB"))
-      return emit_and_load(convert_ssa(convert_anf(ast)))
+      return emit_and_load(convert_ssa(convert_anf(ast, true), true))
    end
 
    test("tcp port 80 or udp port 34")
